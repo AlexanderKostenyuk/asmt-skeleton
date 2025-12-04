@@ -1,0 +1,104 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.12.0'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Application dependencies
+    implementation 'org.springframework:spring-context:5.3.35'
+    implementation 'org.springframework.boot:spring-boot:2.7.18'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.7.18'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.7.18'
+    implementation 'io.cucumber:cucumber-spring:7.18.1'
+    // Cucumber core (for step definitions, etc.)
+    testImplementation 'io.cucumber:cucumber-java:7.18.1'
+    // Cucumber JUnit Platform engine (to run features on JUnit 5)
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.18.1'
+    // AssertJ for fluent assertions in tests
+    testImplementation 'org.assertj:assertj-core:3.25.3'
+    // Spring TestContext for cucumber-spring integration
+    testImplementation 'org.springframework:spring-test:5.3.35'
+    // Spring Boot test support (for @SpringBootTest)
+    testImplementation 'org.springframework.boot:spring-boot-test:2.7.18'
+    // SnakeYAML for loading application.yml in Spring TestContext
+    testImplementation 'org.yaml:snakeyaml:1.33'
+    implementation 'io.rest-assured:rest-assured:5.5.0'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    // SLF4J runtime binding to avoid NOP logger
+    runtimeOnly 'org.slf4j:slf4j-simple:1.7.36'
+    // Jackson for JSON serialization/deserialization used by JsonUtils
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    // Lombok for tests
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.platform:junit-platform-suite-api'
+    // Suite engine required at runtime to execute @Suite tests
+    testRuntimeOnly 'org.junit.platform:junit-platform-suite-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Ensure SLF4J binding is present at test runtime as well
+    testRuntimeOnly 'org.slf4j:slf4j-simple:1.7.36'
+
+    // Allure adapter for Cucumber 7
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.29.0'
+}
+
+test {
+    useJUnitPlatform()
+    // Ensure local profile is active during tests (Cucumber & Spring Boot)
+    systemProperty 'spring.profiles.active', 'local'
+    // Show test results in Gradle output
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat 'full'
+        showStandardStreams = true
+    }
+}
+
+// Optional Allure configuration (versions can be omitted to use defaults)
+allure {
+    report {
+        version = '2.27.0'
+    }
+    adapter {
+        frameworks {
+            cucumber7jvm {
+                adapterVersion = '2.29.0'
+            }
+        }
+    }
+}
+
+// Align Gradle source sets with the project structure
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/code']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/code']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
